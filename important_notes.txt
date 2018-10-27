@@ -1,0 +1,127 @@
+AWS CLI TO LIST LBS 
+aws elbv2 describe-load-balancers
+
+EXAMPLE CONTAINING ONLY ONE LB IN THE LIST
+{
+    "LoadBalancers": [
+        {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-west-3:362841654686:loadbalancer/app/weblb1/d559c4a8387d887e",
+            "DNSName": "weblb1-1903986404.eu-west-3.elb.amazonaws.com",
+            "CanonicalHostedZoneId": "Z3Q77PNBQS71R4",
+            "CreatedTime": "2018-10-14T11:45:57.180Z",
+            "LoadBalancerName": "weblb1",
+            "Scheme": "internet-facing",
+            "VpcId": "vpc-0cf5a865",
+            "State": {
+                "Code": "active"
+            },
+            "Type": "application",
+            "AvailabilityZones": [
+                {
+                    "ZoneName": "eu-west-3c",
+                    "SubnetId": "subnet-9afb5cd7"
+                },
+                {
+                    "ZoneName": "eu-west-3b",
+                    "SubnetId": "subnet-ffe17384"
+                }
+            ],
+            "SecurityGroups": [
+                "sg-015edc42eca161561",
+                "sg-e3e4c98b"
+            ],
+            "IpAddressType": "ipv4"
+        }
+    ]
+}
+
+
+$ aws elbv2 describe-target-groups --load-balancer-arn arn:aws:elasticloadbalancing:eu-west-3:362841654686:loadbalancer/app/weblb1/d559c4a8387d887e
+{
+    "TargetGroups": [
+        {
+            "TargetGroupArn": "arn:aws:elasticloadbalancing:eu-west-3:362841654686:targetgroup/test-lb-1/be96dad79e5b2dbf",
+            "TargetGroupName": "test-lb-1",
+            "Protocol": "HTTP",
+            "Port": 80,
+            "VpcId": "vpc-0cf5a865",
+            "HealthCheckProtocol": "HTTP",
+            "HealthCheckPort": "traffic-port",
+            "HealthCheckIntervalSeconds": 30,
+            "HealthCheckTimeoutSeconds": 5,
+            "HealthyThresholdCount": 5,
+            "UnhealthyThresholdCount": 2,
+            "HealthCheckPath": "/index.html",
+            "Matcher": {
+                "HttpCode": "200"
+            },
+            "LoadBalancerArns": [
+                "arn:aws:elasticloadbalancing:eu-west-3:362841654686:loadbalancer/app/weblb1/d559c4a8387d887e"
+            ],
+            "TargetType": "instance"
+        }
+    ]
+}
+
+
+
+
+
+
+
+$ aws elbv2 describe-target-health --target-group-arn arn:aws:elasticloadbalancing:eu-west-3:362841654686:targetgroup/test-lb-1/be96dad79e5b2dbf
+{
+    "TargetHealthDescriptions": [
+        {
+            "Target": {
+                "Id": "i-0bec0c5070ce13794",
+                "Port": 80
+            },
+            "HealthCheckPort": "80",
+            "TargetHealth": {
+                "State": "healthy"
+            }
+        }
+    ]
+}
+================================
+LIST OF REPL TEST COMMANDS
+import mydesign
+load_balancers = mydesign.List_lbs()
+tgs = mydesign.list_target_groups(load_balancers["LoadBalancers"][0])
+mydesign.list_TargetHealth(tgs['TargetGroups'][0])
+=================================
+
+Expected DICTIONARY
+mydesign.nested_lbs_tgs_tgh()
+
+   "LoadBalancers": [
+            {
+            "LoadBalancerArn": "arn:aws:elasticloadbalancing:eu-west-3:362841654686:loadbalancer/app/weblb1/d559c4a8387d887e",
+            "DNSName": "weblb1-1903986404.eu-west-3.elb.amazonaws.com",
+            "LoadBalancerName": "weblb1",
+            "Scheme": "internet-facing",
+            "TargetGroups": [
+        		{
+            		"TargetGroupArn": "arn:aws:elasticloadbalancing:eu-west-3:362841654686:targetgroup/test-lb-1/be96dad79e5b2dbf",
+            		"TargetGroupName": "test-lb-1",
+            		"Protocol": "HTTP",
+            		"Port": 80,
+            		"HealthCheckProtocol": "HTTP",
+		            "TargetHealthDescriptions": [
+			            {
+            				"Target": {
+                				"Id": "i-0bec0c5070ce13794",
+                				"Port": 80
+            				},
+            				"HealthCheckPort": "80",
+            				"TargetHealth": {
+                				"State": "healthy"
+            				}
+        				}
+    				]
+        		}
+		]
+	        }
+            ]
+            }
